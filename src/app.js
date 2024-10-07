@@ -1,30 +1,35 @@
-const express = require("express");
+import express from "express";
+import { AdminAuth, UserAuth } from "./middleware/auth.js";
 
 const app = express();
 
-app.get("/user/:userId", (req, res) => {
-  const { userId } = req.params;
-  console.log(userId);
-  res.send(`Got the UserId ==> ${userId}`);
+app.use("/admin", AdminAuth);
+
+app.get("/user/login", (req, res) => {
+  res.send("userLoged in successfully");
 });
 
-app.get("/user", (req, res) => {
-  const { userName, age } = req.query;
-  console.log(userName, age);
+app.use("/user", UserAuth);
 
-  if (userName && age)
-    res.send(`got the userName ==> ${userName} and Age ==> ${age}`);
-  else if (userName) res.send(`got the userName ==> ${userName}`);
-  else if (age) res.send(`got the age ==> ${age}`);
-  else res.send("no params Passed sending    nothing");
+app.get("/user/data", (req, res) => {
+  try {
+    res.send("User Data Send Successfully");
+  } catch (err) {
+    res.status(500).send(`got an error Please content Dev Team ${err}`);
+  }
 });
 
-app.post("/user", (req, res) => {
-  res.send("Post request To Users");
+app.get("/admin/getAdminData", (req, res) => {
+  try {
+    res.send("Admin User Data Send Successfully");
+  } catch (err) {
+    res.status(500).send(`got an error Please content Dev Team ${err}`);
+  }
 });
 
-app.delete("/user", (req, res) => {
-  res.send("Deleted the user");
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send(`Something broke! ${err}`);
 });
 
 app.listen(7777, () => {
